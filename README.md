@@ -1,6 +1,6 @@
 # 天气 App（原生 Android 学习项目）
 
-> **路线图**：[天气 App v2 — 路线图 (#11)](https://github.com/Zoti321/app1/issues/11) — ✅ 决策已完成，实现从 [#19 v2.1](https://github.com/Zoti321/app1/issues/19) 开始
+> **路线图**：[天气 App v2 — 路线图 (#11)](https://github.com/Zoti321/app1/issues/11) — ✅ 已交付并关闭
 
 
 通过开发一个调用公开 API 的天气应用，系统学习原生 Android 开发。项目基于 **Kotlin + Jetpack Compose + Material 3**，从零开始逐步引入网络请求、状态管理、权限与架构分层。
