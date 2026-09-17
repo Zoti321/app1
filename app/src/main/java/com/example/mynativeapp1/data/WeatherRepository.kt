@@ -7,9 +7,9 @@ import java.io.IOException
 
 class WeatherRepository(
     private val api: OpenMeteoApi,
-) {
+) : WeatherDataSource {
 
-    suspend fun getWeather(city: String): Result<WeatherInfo> {
+    override suspend fun getWeather(city: String): Result<WeatherInfo> {
         return try {
             val geocoding = api.searchCity(name = city)
             val location = geocoding.results?.firstOrNull()
