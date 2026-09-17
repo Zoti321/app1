@@ -67,6 +67,19 @@ class WeatherViewModelTest {
     }
 
     @Test
+    fun successState_persistsWithoutAdditionalFetch() = runTest {
+        val dataSource = FakeWeatherDataSource(Result.success(SAMPLE_WEATHER))
+        val viewModel = WeatherViewModel(dataSource)
+
+        assertEquals(WeatherUiState.Success(SAMPLE_WEATHER), viewModel.uiState.value)
+        assertEquals(1, dataSource.callCount)
+
+        // 模拟屏幕旋转：同一 ViewModel 实例保留，不应再次请求
+        assertEquals(WeatherUiState.Success(SAMPLE_WEATHER), viewModel.uiState.value)
+        assertEquals(1, dataSource.callCount)
+    }
+
+    @Test
     fun retry_afterError_reloadsWeather() = runTest {
         val dataSource = FakeWeatherDataSource(
             results = mutableListOf(

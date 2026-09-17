@@ -133,10 +133,13 @@ private fun SuccessContent(
         WeatherMetricsCard(weather = weather)
 
         Text(
-            text = "数据来源 Open-Meteo.com",
+            text = WeatherAttribution.TEXT,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
+            modifier = Modifier.semantics {
+                contentDescription = WeatherAttribution.CONTENT_DESCRIPTION
+            },
         )
     }
 }
@@ -177,7 +180,9 @@ private fun MetricItem(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.semantics(mergeDescendants = true) {
+            contentDescription = "$label $value"
+        },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -206,7 +211,11 @@ private fun ErrorContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 24.dp),
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 24.dp)
+            .semantics {
+                liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -221,6 +230,9 @@ private fun ErrorContent(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
+            modifier = Modifier.semantics {
+                contentDescription = message
+            },
         )
         FilledTonalButton(
             onClick = onRetry,
