@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.lifecycle.viewmodel.ktx)

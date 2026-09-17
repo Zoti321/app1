@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyNativeApp1Theme {
                 val viewModel: WeatherViewModel = viewModel(
-                    factory = WeatherViewModelFactory(),
+                    factory = WeatherViewModelFactory(applicationContext),
                 )
                 WeatherScreen(
                     viewModel = viewModel,

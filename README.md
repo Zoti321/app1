@@ -1,6 +1,6 @@
 # 天气 App（原生 Android 学习项目）
 
-> **路线图**：[天气 App MVP — 路线图 (#1)](https://github.com/Zoti321/app1/issues/1) — ✅ 决策已完成，可进入实现阶段
+> **路线图**：[天气 App v2 — 路线图 (#11)](https://github.com/Zoti321/app1/issues/11) — ✅ 决策已完成，实现从 [#19 v2.1](https://github.com/Zoti321/app1/issues/19) 开始
 
 
 通过开发一个调用公开 API 的天气应用，系统学习原生 Android 开发。项目基于 **Kotlin + Jetpack Compose + Material 3**，从零开始逐步引入网络请求、状态管理、权限与架构分层。
@@ -33,7 +33,7 @@
 - [x] 显示：城市名、温度、天气描述、湿度、风速、Open-Meteo 出处标注
 - [x] 加载中 / 加载失败 / 成功 三种 UI 状态；失败态提供「重试」
 - [x] 屏幕旋转后数据不丢失（ViewModel 保留）
-- [x] **不含**：下拉刷新、GPS、城市搜索、本地数据库、多城市收藏
+- [x] **不含**：GPS、城市搜索、本地数据库、多城市收藏（v2.1 起含下拉刷新，见 [#12](https://github.com/Zoti321/app1/issues/12)）
 
 ### MVP 验收清单 ([#10](https://github.com/Zoti321/app1/issues/10))
 
@@ -44,13 +44,15 @@
 - [x] Loading 区域 `liveRegion = Polite`；温度、湿度/风速、重试按钮具备 `contentDescription`
 - [x] Open-Meteo 出处标注可见（CC BY 4.0）
 
-### 后续扩展（按学习进度追加）
+### v2 扩展（已实现 — [#11](https://github.com/Zoti321/app1/issues/11)）
 
-- [ ] 搜索城市并切换展示
-- [ ] 使用 GPS 定位获取当前城市（运行时权限）
-- [ ] 多城市收藏与本地缓存（Room / DataStore）
-- [ ] 未来几天天气预报
-- [ ] 深色模式与 Compose Preview 完善
+- [x] 搜索城市并切换展示（[#19](https://github.com/Zoti321/app1/issues/19)）
+- [x] 未来几天天气预报（[#20](https://github.com/Zoti321/app1/issues/20)）
+- [x] 深色模式（[#20](https://github.com/Zoti321/app1/issues/20)）
+- [x] 多城市收藏与 DataStore 持久化（[#21](https://github.com/Zoti321/app1/issues/21)）
+- [x] GPS 定位（[#21](https://github.com/Zoti321/app1/issues/21)）
+
+领域术语见 [`CONTEXT.md`](CONTEXT.md)；MVP 架构决策见 [`docs/adr/`](docs/adr/)。
 
 ## 公开 API 方案
 

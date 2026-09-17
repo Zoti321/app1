@@ -9,4 +9,5 @@ data class WeatherInfo(
     val weatherCode: Int,
     val windSpeedKmh: Double?,
     val observedAt: String,
+    val dailyForecasts: List<DailyForecast> = emptyList(),
 )
