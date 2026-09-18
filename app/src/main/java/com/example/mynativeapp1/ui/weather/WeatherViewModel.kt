@@ -10,6 +10,7 @@ import com.example.mynativeapp1.data.FavoriteLocation
 import com.example.mynativeapp1.data.SavedLocation
 import com.example.mynativeapp1.data.WeatherDataSource
 import com.example.mynativeapp1.data.location.DeviceLocationProvider
+import com.example.mynativeapp1.data.location.LocationServicesDisabledException
 import com.example.mynativeapp1.data.location.LocationUnavailableException
 import com.example.mynativeapp1.data.location.PlaceNameResolver
 import com.example.mynativeapp1.data.toFavoriteLocation
@@ -180,8 +181,12 @@ class WeatherViewModel @Inject constructor(
     }
 
     fun onSnackbarAction(action: WeatherUiEventAction?) {
-        if (action == WeatherUiEventAction.OpenAppSettings) {
-            viewModelScope.launch { _events.emit(WeatherUiEvent.OpenAppSettings) }
+        viewModelScope.launch {
+            when (action) {
+                WeatherUiEventAction.OpenAppSettings -> _events.emit(WeatherUiEvent.OpenAppSettings)
+                WeatherUiEventAction.OpenLocationSettings -> _events.emit(WeatherUiEvent.OpenLocationSettings)
+                null -> Unit
+            }
         }
     }
 
@@ -205,12 +210,17 @@ class WeatherViewModel @Inject constructor(
                     selectLocation(location)
                 },
                 onFailure = { error ->
-                    val message = if (error is LocationUnavailableException) {
-                        "无法获取当前位置，请稍后重试"
-                    } else {
-                        "无法获取当前位置，请稍后重试"
+                    when (error) {
+                        is LocationServicesDisabledException -> _events.emit(
+                            WeatherUiEvent.Snackbar(
+                                message = "请开启设备定位服务后重试",
+                                actionLabel = "去设置",
+                                action = WeatherUiEventAction.OpenLocationSettings,
+                            ),
+                        )
+                        is LocationUnavailableException -> emitSnackbar("无法获取当前位置，请稍后重试")
+                        else -> emitSnackbar("无法获取当前位置，请稍后重试")
                     }
-                    emitSnackbar(message)
                 },
             )
         }
@@ -288,8 +298,11 @@ sealed interface WeatherUiEvent {
     ) : WeatherUiEvent
 
     data object OpenAppSettings : WeatherUiEvent
+
+    data object OpenLocationSettings : WeatherUiEvent
 }
 
 enum class WeatherUiEventAction {
     OpenAppSettings,
+    OpenLocationSettings,
 }

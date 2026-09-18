@@ -3,6 +3,8 @@ package com.example.mynativeapp1.data.location
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
+import android.location.LocationManager
+import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import com.google.android.gms.location.LocationServices
@@ -27,35 +29,63 @@ interface PlaceNameResolver {
 }
 
 class FusedDeviceLocationProvider @Inject constructor(
-    @param:ApplicationContext context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : DeviceLocationProvider {
     private val client = LocationServices.getFusedLocationProviderClient(context)
 
     @SuppressLint("MissingPermission")
-    override suspend fun getCurrentCoordinates(): Result<Coordinates> =
+    override suspend fun getCurrentCoordinates(): Result<Coordinates> {
+        if (!isDeviceLocationEnabled()) {
+            return Result.failure(LocationServicesDisabledException())
+        }
+        fetchCurrentLocation()?.let { return Result.success(it) }
+        return fetchLastKnownLocation()
+    }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun fetchCurrentLocation(): Coordinates? =
         suspendCancellableCoroutine { continuation ->
             val cancellationTokenSource = CancellationTokenSource()
             continuation.invokeOnCancellation { cancellationTokenSource.cancel() }
             client.getCurrentLocation(
-                Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                Priority.PRIORITY_HIGH_ACCURACY,
                 cancellationTokenSource.token,
-            ).addOnSuccessListener { location ->
-                if (location == null) {
-                    continuation.resume(Result.failure(LocationUnavailableException()))
-                } else {
-                    continuation.resume(
-                        Result.success(
-                            Coordinates(
-                                latitude = location.latitude,
-                                longitude = location.longitude,
-                            ),
-                        ),
-                    )
-                }
-            }.addOnFailureListener { error ->
-                continuation.resume(Result.failure(error))
+            ).addOnCompleteListener { task ->
+                if (continuation.isCancelled) return@addOnCompleteListener
+                val location = if (task.isSuccessful) task.result else null
+                continuation.resume(location?.toCoordinates())
             }
         }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun fetchLastKnownLocation(): Result<Coordinates> =
+        suspendCancellableCoroutine { continuation ->
+            client.lastLocation.addOnCompleteListener { task ->
+                if (continuation.isCancelled) return@addOnCompleteListener
+                val location = if (task.isSuccessful) task.result else null
+                if (location != null) {
+                    continuation.resume(Result.success(location.toCoordinates()))
+                } else {
+                    continuation.resume(Result.failure(LocationUnavailableException()))
+                }
+            }
+        }
+
+    private fun isDeviceLocationEnabled(): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            locationManager.isLocationEnabled
+        } else {
+            @Suppress("DEPRECATION")
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        }
+    }
+
+    private fun android.location.Location.toCoordinates() = Coordinates(
+        latitude = latitude,
+        longitude = longitude,
+    )
 }
 
 class AndroidPlaceNameResolver @Inject constructor(
@@ -78,3 +108,5 @@ class AndroidPlaceNameResolver @Inject constructor(
 }
 
 class LocationUnavailableException : Exception()
+
+class LocationServicesDisabledException : Exception()
