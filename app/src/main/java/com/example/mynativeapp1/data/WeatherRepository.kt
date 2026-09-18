@@ -2,11 +2,12 @@ package com.example.mynativeapp1.data
 
 import com.example.mynativeapp1.data.remote.OpenMeteoApi
 import com.example.mynativeapp1.data.remote.dto.DailyWeather
+import javax.inject.Inject
 import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import java.io.IOException
 
-class WeatherRepository(
+class WeatherRepository @Inject constructor(
     private val api: OpenMeteoApi,
 ) : WeatherDataSource {
 

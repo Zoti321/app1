@@ -3,6 +3,8 @@ package com.example.mynativeapp1.data.location
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -24,8 +26,8 @@ interface PlaceNameResolver {
     suspend fun resolveName(latitude: Double, longitude: Double): String?
 }
 
-class FusedDeviceLocationProvider(
-    context: Context,
+class FusedDeviceLocationProvider @Inject constructor(
+    @param:ApplicationContext context: Context,
 ) : DeviceLocationProvider {
     private val client = LocationServices.getFusedLocationProviderClient(context)
 
@@ -56,8 +58,8 @@ class FusedDeviceLocationProvider(
         }
 }
 
-class AndroidPlaceNameResolver(
-    context: Context,
+class AndroidPlaceNameResolver @Inject constructor(
+    @param:ApplicationContext context: Context,
 ) : PlaceNameResolver {
     private val geocoder = Geocoder(context, Locale.CHINA)
 

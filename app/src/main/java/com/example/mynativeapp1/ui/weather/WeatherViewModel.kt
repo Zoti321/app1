@@ -2,6 +2,8 @@ package com.example.mynativeapp1.ui.weather
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import com.example.mynativeapp1.data.FavoriteAddResult
 import com.example.mynativeapp1.data.PreferencesStore
 import com.example.mynativeapp1.data.FavoriteLocation
@@ -29,7 +31,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
-class WeatherViewModel(
+@HiltViewModel
+class WeatherViewModel @Inject constructor(
     private val dataSource: WeatherDataSource,
     private val preferencesStore: PreferencesStore,
     private val locationProvider: DeviceLocationProvider,

@@ -104,9 +104,9 @@ GET https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&curren
 
 ## 架构设计 — 已锁定 ([#4](https://github.com/Zoti321/app1/issues/4))
 
-- **DI**：MVP 手动构造，无 Hilt/Koin；`ViewModelProvider.Factory` 内 wiring
-- **ViewModel**：`lifecycle-viewmodel-compose` 的 `viewModel(factory = …)`
-- **约束**：`WeatherScreen → WeatherViewModel → WeatherRepository → OpenMeteoApi`（UI 不直连 Retrofit）
+- **DI**：[Hilt](https://developer.android.com/training/dependency-injection/hilt-android) + KSP；`di/NetworkModule` + `di/DataModule`（见 [ADR-0005](docs/adr/0005-hilt-dependency-injection.md)）
+- **ViewModel**：`@HiltViewModel` + Compose `hiltViewModel()`（`hilt-lifecycle-viewmodel-compose`）
+- **约束**：`WeatherScreen → WeatherViewModel → WeatherRepository → OpenMeteoApi`（UI 不直连 Retrofit；ViewModel 依赖接口）
 
 ```
 ┌─────────────────────────────────────┐
@@ -134,12 +134,16 @@ GET https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&curren
 
 ```
 app/src/main/java/com/example/mynativeapp1/
-├── MainActivity.kt
+├── WeatherApplication.kt      @HiltAndroidApp
+├── MainActivity.kt              @AndroidEntryPoint
+├── di/
+│   ├── NetworkModule.kt         Hilt @Provides（Retrofit / OpenMeteoApi）
+│   └── DataModule.kt            Hilt @Binds（接口 → 实现）
 ├── ui/
 │   ├── theme/
 │   └── weather/
-│       ├── WeatherScreen.kt
-│       ├── WeatherViewModel.kt
+│       ├── WeatherScreen.kt     hiltViewModel()
+│       ├── WeatherViewModel.kt  @HiltViewModel
 │       ├── WeatherUiState.kt
 │       └── WeatherIconMapper.kt
 └── data/
@@ -147,7 +151,7 @@ app/src/main/java/com/example/mynativeapp1/
     ├── WeatherInfo.kt
     ├── WeatherCodeMapper.kt
     └── remote/
-        ├── NetworkModule.kt
+        ├── OpenMeteoApiFactory.kt   createOpenMeteoApi（测试用）
         ├── OpenMeteoApi.kt
         └── dto/
 ```

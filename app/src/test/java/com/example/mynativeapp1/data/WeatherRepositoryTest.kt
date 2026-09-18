@@ -1,6 +1,6 @@
 package com.example.mynativeapp1.data
 
-import com.example.mynativeapp1.data.remote.NetworkModule
+import com.example.mynativeapp1.data.remote.OpenMeteoApiFactory
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -24,7 +24,7 @@ class WeatherRepositoryTest {
         geocodingServer.start()
         forecastServer.start()
 
-        val api = NetworkModule.createOpenMeteoApi(
+        val api = OpenMeteoApiFactory.createOpenMeteoApi(
             geocodingBaseUrl = geocodingServer.url("/").toString(),
             forecastBaseUrl = forecastServer.url("/").toString(),
         )
@@ -103,7 +103,7 @@ class WeatherRepositoryTest {
     fun getWeather_returnsNoNetwork_whenConnectionFails() = runTest {
         forecastServer.shutdown()
 
-        val api = NetworkModule.createOpenMeteoApi(
+        val api = OpenMeteoApiFactory.createOpenMeteoApi(
             geocodingBaseUrl = geocodingServer.url("/").toString(),
             forecastBaseUrl = forecastServer.url("/").toString(),
         )
